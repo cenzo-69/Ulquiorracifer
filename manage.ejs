@@ -1,0 +1,398 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage <%= guild.name %> - Discord Bot Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .navbar-brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .back-button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Main Content */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .server-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 1.5rem;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .server-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #7289DA, #5865F2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .server-info h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .server-info p {
+      opacity: 0.8;
+      margin-bottom: 0.25rem;
+    }
+
+    .boost-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: linear-gradient(45deg, #f47fff, #ff3333);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-top: 0.5rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stat-item:last-child {
+      border-bottom: none;
+    }
+
+    .stat-label {
+      opacity: 0.8;
+    }
+
+    .stat-value {
+      font-weight: bold;
+      color: #43B581;
+    }
+
+    /* Security & Features */
+    .security-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .feature-badge {
+      background: linear-gradient(45deg, #43B581, #4CAF50);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin: 0.25rem;
+      display: inline-block;
+    }
+
+    .verification-level {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .verification-0 { background: #43B581; }
+    .verification-1 { background: #F1C40F; color: #2C3E50; }
+    .verification-2 { background: #E67E22; }
+    .verification-3 { background: #E74C3C; }
+    .verification-4 { background: #9B59B6; }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .container {
+        padding: 1rem;
+      }
+
+      .server-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-card {
+        padding: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .server-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+      }
+
+      .server-info h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/" class="navbar-brand">🤖 Bot Dashboard</a>
+    <a href="/dashboard" class="back-button">← Back to Dashboard</a>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Server Header -->
+    <div class="server-header">
+      <div class="server-icon">
+        <% if (serverInfo.icon) { %>
+          <img src="https://cdn.discordapp.com/icons/<%= serverInfo.id %>/<%= serverInfo.icon %>.png?size=256" 
+               alt="<%= serverInfo.name %>" style="width: 100%; height: 100%; border-radius: 50%;">
+        <% } else { %>
+          <%= serverInfo.name.charAt(0).toUpperCase() %>
+        <% } %>
+      </div>
+      <div class="server-info">
+        <h1><%= serverInfo.name %></h1>
+        <p>ID: <%= serverInfo.id %></p>
+        <p>Owner: <%= serverInfo.owner_id %></p>
+        <p>Created: <%= new Date(((parseInt(serverInfo.id) / 4194304) + 1420070400000)).toLocaleDateString() %></p>
+        <% if (serverInfo.boostLevel > 0) { %>
+          <div class="boost-badge">
+            🚀 Level <%= serverInfo.boostLevel %> (<%= serverInfo.boostCount %> boosts)
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <!-- Member Stats -->
+      <div class="stat-card">
+        <h3>👥 Members</h3>
+        <div class="stat-item">
+          <span class="stat-label">Total Members</span>
+          <span class="stat-value"><%= serverInfo.approximate_member_count || 0 %></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Online Members</span>
+          <span class="stat-value"><%= serverInfo.approximate_presence_count || 0 %></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Max Members</span>
+          <span class="stat-value"><%= serverInfo.max_members || 'Unlimited' %></span>
+        </div>
+      </div>
+
+      <!-- Channel Stats -->
+      <div class="stat-card">
+        <h3>📋 Channels</h3>
+        <div class="stat-item">
+          <span class="stat-label">Total Channels</span>
+          <span class="stat-value"><%= serverInfo.channelStats.total %></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Text Channels</span>
+          <span class="stat-value"><%= serverInfo.channelStats.text %></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Voice Channels</span>
+          <span class="stat-value"><%= serverInfo.channelStats.voice %></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Categories</span>
+          <span class="stat-value"><%= serverInfo.channelStats.categories %></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Forum Channels</span>
+          <span class="stat-value"><%= serverInfo.channelStats.forums %></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Stage Channels</span>
+          <span class="stat-value"><%= serverInfo.channelStats.stages %></span>
+        </div>
+      </div>
+
+      <!-- Role Stats -->
+      <div class="stat-card">
+        <h3>🛡️ Roles & Permissions</h3>
+        <div class="stat-item">
+          <span class="stat-label">Total Roles</span>
+          <span class="stat-value"><%= serverInfo.roleCount %></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Highest Role</span>
+          <span class="stat-value"><%= roles.sort((a, b) => b.position - a.position)[0].name %></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Admin Roles</span>
+          <span class="stat-value"><%= roles.filter(r => (r.permissions & 0x8) === 0x8).length %></span>
+        </div>
+      </div>
+
+      <!-- Boost Stats -->
+      <div class="stat-card">
+        <h3>🚀 Server Boost</h3>
+        <div class="stat-item">
+          <span class="stat-label">Boost Level</span>
+          <span class="stat-value">Level <%= serverInfo.boostLevel %></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Boost Count</span>
+          <span class="stat-value"><%= serverInfo.boostCount %></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Max File Size</span>
+          <span class="stat-value">
+            <%= serverInfo.boostLevel === 0 ? '8 MB' : 
+                serverInfo.boostLevel === 1 ? '8 MB' : 
+                serverInfo.boostLevel === 2 ? '50 MB' : '100 MB' %>
+          </span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Emoji Limit</span>
+          <span class="stat-value">
+            <%= serverInfo.boostLevel === 0 ? '50' : 
+                serverInfo.boostLevel === 1 ? '100' : 
+                serverInfo.boostLevel === 2 ? '150' : '250' %>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security & Features -->
+    <div class="security-grid">
+      <!-- Security Settings -->
+      <div class="stat-card">
+        <h3>🔒 Security Settings</h3>
+        <div class="stat-item">
+          <span class="stat-label">Verification Level</span>
+          <div class="verification-level verification-<%= serverInfo.verificationLevel %>">
+            <%= ['None', 'Low', 'Medium', 'High', 'Very High'][serverInfo.verificationLevel] %>
+          </div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Content Filter</span>
+          <span class="stat-value">
+            <%= ['Disabled', 'Members without roles', 'All members'][serverInfo.explicitContentFilter] %>
+          </span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">2FA Requirement</span>
+          <span class="stat-value"><%= serverInfo.mfaLevel ? 'Enabled' : 'Disabled' %></span>
+        </div>
+      </div>
+
+      <!-- Server Features -->
+      <div class="stat-card">
+        <h3>✨ Server Features</h3>
+        <div style="margin-top: 1rem;">
+          <% if (serverInfo.features.length === 0) { %>
+            <p style="opacity: 0.7;">No special features enabled</p>
+          <% } else { %>
+            <% serverInfo.features.forEach(feature => { %>
+              <span class="feature-badge">
+                <%= feature.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase()) %>
+              </span>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

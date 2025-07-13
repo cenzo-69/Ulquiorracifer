@@ -1,0 +1,450 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discord Bot Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .navbar-brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .profile-section {
+      position: relative;
+    }
+
+    .profile-button {
+      display: flex;
+      align-items: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50px;
+      transition: background 0.3s ease;
+    }
+
+    .profile-button:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .profile-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+
+    .profile-name {
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #2C2F33;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      min-width: 150px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+    }
+
+    .dropdown-menu.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-item {
+      display: block;
+      padding: 0.75rem 1rem;
+      color: #fff;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+
+    .dropdown-item:hover {
+      background: #7289DA;
+    }
+
+    /* Main Content */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .dashboard-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .dashboard-title {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(45deg, #fff, #e0e6ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .dashboard-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.8;
+    }
+
+    /* Server Grid */
+    .servers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .server-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .server-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .server-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-bottom: 1rem;
+      background: linear-gradient(45deg, #7289DA, #5865F2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .server-name {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+
+    .server-id {
+      font-size: 0.85rem;
+      opacity: 0.7;
+      margin-bottom: 1rem;
+    }
+
+    .member-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #43B581;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+
+    .manage-button {
+      width: 100%;
+      padding: 0.75rem;
+      background: linear-gradient(45deg, #7289DA, #5865F2);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .manage-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(114, 137, 218, 0.4);
+    }
+
+    .invite-button {
+      width: 100%;
+      padding: 0.75rem;
+      background: linear-gradient(45deg, #43B581, #4CAF50);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .invite-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(67, 181, 129, 0.4);
+    }
+
+    .bot-status {
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .bot-present {
+      background: rgba(67, 181, 129, 0.2);
+      color: #43B581;
+      border: 1px solid rgba(67, 181, 129, 0.3);
+    }
+
+    .bot-absent {
+      background: rgba(240, 71, 71, 0.2);
+      color: #F04747;
+      border: 1px solid rgba(240, 71, 71, 0.3);
+    }
+
+    .no-servers {
+      text-align: center;
+      padding: 3rem;
+      opacity: 0.7;
+    }
+
+    .no-servers-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 1rem;
+      }
+
+      .navbar-brand {
+        font-size: 1.2rem;
+      }
+
+      .profile-avatar {
+        width: 35px;
+        height: 35px;
+      }
+
+      .profile-name {
+        display: none;
+      }
+
+      .container {
+        padding: 1rem;
+      }
+
+      .dashboard-title {
+        font-size: 2rem;
+      }
+
+      .servers-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .server-card {
+        padding: 1rem;
+      }
+
+      .member-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .navbar {
+        padding: 0.75rem;
+      }
+
+      .dashboard-title {
+        font-size: 1.5rem;
+      }
+
+      .server-card {
+        padding: 0.75rem;
+      }
+
+      .server-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/" class="navbar-brand">🤖 Bot Dashboard</a>
+    <div class="profile-section">
+      <button class="profile-button" onclick="toggleDropdown()">
+        <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png?size=256" 
+             alt="Profile" class="profile-avatar">
+        <span class="profile-name"><%= user.username %></span>
+      </button>
+      <div class="dropdown-menu" id="profileDropdown">
+        <a href="/logout" class="dropdown-item">🚪 Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="dashboard-header">
+      <h1 class="dashboard-title">Welcome back, <%= user.username %>!</h1>
+      <p class="dashboard-subtitle">Manage your Discord servers where you have administrator permissions</p>
+    </div>
+
+    <% if (!guilds.length) { %>
+      <div class="no-servers">
+        <div class="no-servers-icon">🤖</div>
+        <h2>No servers found</h2>
+        <p>You don't have any servers with admin permissions where the bot is present.</p>
+      </div>
+    <% } else { %>
+      <div class="servers-grid">
+        <% guilds.forEach(guild => { %>
+          <div class="server-card">
+            <div class="server-icon">
+              <% if (guild.icon) { %>
+                <img src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png?size=256" 
+                     alt="<%= guild.name %>" style="width: 100%; height: 100%; border-radius: 50%;">
+              <% } else { %>
+                <%= guild.name.charAt(0).toUpperCase() %>
+              <% } %>
+            </div>
+            <h3 class="server-name"><%= guild.name %></h3>
+            <p class="server-id">ID: <%= guild.id %></p>
+            
+            <% if (guild.botPresent) { %>
+              <div class="bot-status bot-present">
+                ✅ Bot is active in this server
+              </div>
+              <div class="member-stats">
+                <div class="stat-item">
+                  <div class="stat-number"><%= guild.onlineMembers %></div>
+                  <div class="stat-label">Online</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-number"><%= guild.totalMembers %></div>
+                  <div class="stat-label">Total Members</div>
+                </div>
+              </div>
+              <a href="/manage/<%= guild.id %>" class="manage-button">
+                ⚙️ Manage Server
+              </a>
+            <% } else { %>
+              <div class="bot-status bot-absent">
+                ❌ Bot not in this server
+              </div>
+              <div class="member-stats">
+                <div class="stat-item">
+                  <div class="stat-number">-</div>
+                  <div class="stat-label">Online</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-number">-</div>
+                  <div class="stat-label">Total Members</div>
+                </div>
+              </div>
+              <a href="https://discord.com/api/oauth2/authorize?client_id=<%= process.env.CLIENT_ID || '1330965493481275413' %>&permissions=8&scope=bot&guild_id=<%= guild.id %>" 
+                 class="invite-button" target="_blank">
+                ➕ Add Bot to Server
+              </a>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <script>
+    function toggleDropdown() {
+      const dropdown = document.getElementById('profileDropdown');
+      dropdown.classList.toggle('show');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const profileSection = document.querySelector('.profile-section');
+      const dropdown = document.getElementById('profileDropdown');
+      
+      if (!profileSection.contains(event.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+
+    // Add smooth scroll behavior
+    document.documentElement.style.scrollBehavior = 'smooth';
+  </script>
+</body>
+</html>
